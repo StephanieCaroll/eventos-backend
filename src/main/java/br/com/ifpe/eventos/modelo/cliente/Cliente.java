@@ -27,16 +27,17 @@ public class Cliente extends EntidadeAuditavel {
     @Column
     private String nome;
 
+@Column
+private String email;
+
     @Column
     private LocalDate dataNascimento;
 
-    @Column
-    private String cpf;
 
     @Column
     private String foneCelular;
 
     @Column
-    private String foneFixo;
+    private String senha;
 
 }

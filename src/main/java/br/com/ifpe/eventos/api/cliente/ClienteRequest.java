@@ -17,24 +17,24 @@ import lombok.NoArgsConstructor;
 public class ClienteRequest {
 
    private String nome;
-   
-    @JsonFormat(pattern = "dd/MM/yyyy")
-   private LocalDate dataNascimento;
 
-   private String cpf;
+   private String email;
+
+   @JsonFormat(pattern = "dd/MM/yyyy")
+   private LocalDate dataNascimento;
 
    private String foneCelular;
 
-   private String foneFixo;
+   private String senha;
 
    public Cliente build() {
 
        return Cliente.builder()
            .nome(nome)
+           .email(email)
            .dataNascimento(dataNascimento)
-           .cpf(cpf)
            .foneCelular(foneCelular)
-           .foneFixo(foneFixo)
+           .senha(senha)
            .build();
    }
 
