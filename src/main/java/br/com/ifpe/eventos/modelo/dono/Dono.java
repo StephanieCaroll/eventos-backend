@@ -26,7 +26,7 @@ import lombok.Setter;
 public class Dono extends EntidadeAuditavel {
 
 @Column
-private String razaoSocial;
+private String razaoSocial; //Nome da empresa
 
 @Column
 private String nome;

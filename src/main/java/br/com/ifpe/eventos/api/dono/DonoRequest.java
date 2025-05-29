@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DonoRequest {
     
-private String razaoSocial;
+private String razaoSocial; //nome da empresa
 
 private String nome;
 
