@@ -26,31 +26,24 @@ import lombok.Setter;
 public class Dono extends EntidadeAuditavel {
 
 @Column
-     private String razaoSocial;
+private String razaoSocial;
+
 @Column
-    private String nome;
+private String nome;
+
 @Column
 private String email;
+
 @Column
 private String cpf;
-@Column
-    private String rg;
+
 @Column
 private LocalDate dataNascimento;
 
-    @Column
-    private String enderecoRua;
-    @Column
-    private String enderecoComplemento;
-    @Column
-    private String enderecoNumero;
-    @Column
-    private String enderecoBairro;
-    @Column
-    private String enderecoCidade;
-    @Column
-    private String enderecoCep;
-    @Column
-    private String enderecoUf;
+@Column
+private String senha;
+
+@Column
+private String foneCelular;
     
 }
