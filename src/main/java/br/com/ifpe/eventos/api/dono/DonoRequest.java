@@ -56,6 +56,7 @@ public class DonoRequest {
                 .cpf(cpf)
                 .dataNascimento(dataNascimento)
                 .foneCelular(foneCelular)
+                .usuario(buildUsuario())
                 .build();
     }
 

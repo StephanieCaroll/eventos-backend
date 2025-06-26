@@ -39,8 +39,11 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(authorize -> authorize
 
                 .requestMatchers(HttpMethod.POST, "/api/cliente").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/dono").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/adm").permitAll()
+                
                 .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
-
+                
                 .requestMatchers(HttpMethod.GET, "/api-docs/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
 
@@ -60,7 +63,7 @@ public class SecurityConfiguration {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3001"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
