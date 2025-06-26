@@ -1,29 +1,24 @@
-package br.com.ifpe.eventos.api.dono;
+package br.com.ifpe.eventos.api.administrador;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.ifpe.eventos.modelo.acesso.Perfil;
 import br.com.ifpe.eventos.modelo.acesso.Usuario;
-import br.com.ifpe.eventos.modelo.dono.Dono;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import br.com.ifpe.eventos.modelo.administrador.Adm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DonoRequest {
-
-    private String razaoSocial; //nome da empresa
-
-    private String nome;
+public class AdmRequest {
 
     @NotBlank(message = "O e-mail é de preenchimento obrigatório")
     @Email
@@ -32,31 +27,33 @@ public class DonoRequest {
     @NotBlank(message = "A senha é de preenchimento obrigatório")
     private String password;
 
-    private String cpf;
+    private String nome;
+
+    private String cargo;
+
+    private boolean ativo;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataNascimento;
 
     private String foneCelular;
 
-   public Usuario buildUsuario() {
-       return Usuario.builder()
-           .username(email)
-           .password(password)
-           .roles(Arrays.asList(new Perfil(Perfil.ROLE_CLIENTE)))
-           .build();
-   }
+    public Usuario buildUsuario() {
+        return Usuario.builder()
+                .username(email)
+                .password(password)
+                .roles(Arrays.asList(new Perfil(Perfil.ROLE_CLIENTE)))
+                .build();
+    }
 
-
-    public Dono build() {
-
-        return Dono.builder()
-                .razaoSocial(razaoSocial)
+    public Adm build() {
+        return Adm.builder()
+                .usuario(buildUsuario())
                 .nome(nome)
-                .cpf(cpf)
+                .cargo(cargo)
+                .ativo(ativo)
                 .dataNascimento(dataNascimento)
                 .foneCelular(foneCelular)
                 .build();
     }
-
 }

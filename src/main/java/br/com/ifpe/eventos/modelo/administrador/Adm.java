@@ -1,4 +1,4 @@
-package br.com.ifpe.eventos.modelo.dono;
+package br.com.ifpe.eventos.modelo.administrador;
 
 import java.time.LocalDate;
 
@@ -18,36 +18,35 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Dono")
+@Table(name = "Administrador")
 @SQLRestriction("habilitado = true")
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Dono extends EntidadeAuditavel {
+public class Adm extends EntidadeAuditavel {
 
     @OneToOne
     @JoinColumn(nullable = false)
     private Usuario usuario;
 
     @Column
-    private String razaoSocial; //Nome da empresa
-
-    @Column
     private String nome;
 
-// @Column
-// private String email;
+    // @Column
+    // private String email;
+    // @Column
+    // private String senha;
     @Column
-    private String cpf;
+    private String cargo;
+
+    @Column
+    private boolean ativo;
 
     @Column
     private LocalDate dataNascimento;
 
-// @Column
-// private String senha;
     @Column
     private String foneCelular;
-
 }

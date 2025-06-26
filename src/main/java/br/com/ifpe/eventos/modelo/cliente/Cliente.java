@@ -4,9 +4,12 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.SQLRestriction;
 
+import br.com.ifpe.eventos.modelo.acesso.Usuario;
 import br.com.ifpe.eventos.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,20 +27,23 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Cliente extends EntidadeAuditavel {
 
+    @OneToOne
+    @JoinColumn(nullable = false)
+    private Usuario usuario;
+
     @Column
     private String nome;
 
-    @Column
-    private String email;
+    // @Column
+    // private String email;
 
     @Column
     private LocalDate dataNascimento;
 
-
     @Column
     private String foneCelular;
 
-    @Column
-    private String senha;
+    // @Column
+    // private String senha;
 
 }

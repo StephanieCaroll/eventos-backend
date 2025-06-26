@@ -2,16 +2,35 @@ package br.com.ifpe.eventos.modelo.dono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import br.com.ifpe.eventos.modelo.acesso.Perfil;
+import br.com.ifpe.eventos.modelo.acesso.PerfilRepository;
+import br.com.ifpe.eventos.modelo.acesso.UsuarioService;
 import jakarta.transaction.Transactional;
+
 @Service
 public class DonoService {
-     @Autowired
-   private DonoRepository repository;
 
-   @Transactional
-   public Dono save(Dono dono) {
+    @Autowired
+    private DonoRepository repository;
 
-       dono.setHabilitado(Boolean.TRUE);
-       return repository.save(dono);
-   }
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private PerfilRepository perfilUsuarioRepository;
+
+    @Transactional
+    public Dono save(Dono dono) {
+
+        usuarioService.save(dono.getUsuario());
+
+        for (Perfil perfil : dono.getUsuario().getRoles()) {
+            perfil.setHabilitado(Boolean.TRUE);
+            perfilUsuarioRepository.save(perfil);
+        }
+
+        dono.setHabilitado(Boolean.TRUE);
+        return repository.save(dono);
+    }
 }
