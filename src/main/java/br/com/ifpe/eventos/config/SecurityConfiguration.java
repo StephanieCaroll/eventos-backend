@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpMethod; // Importar HttpMethod
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,18 +37,19 @@ public class SecurityConfiguration {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(c -> c.disable())
             .authorizeHttpRequests(authorize -> authorize
-
-                .requestMatchers(HttpMethod.POST, "/api/cliente").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/dono").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/adm").permitAll()
                 
-                .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/clientes/by-email/**").permitAll() 
+                
+                .requestMatchers(HttpMethod.POST, "/api/auth").permitAll() // Para o login
+                
+                // Permite acesso à documentação da API e Swagger UI
+                .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll() 
 
-                .requestMatchers(HttpMethod.GET, "/api-docs/*").permitAll()
-                .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
-
-                .anyRequest().authenticated()
-
+                .anyRequest().authenticated() 
             )
             .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -59,17 +60,18 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); //Trocar caso dê erro
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
     
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);    
+        source.registerCorsConfiguration("/**", configuration);      
         return source;
     }
 }

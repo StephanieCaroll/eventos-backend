@@ -1,61 +1,63 @@
 package br.com.ifpe.eventos.api.cliente;
 
 import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.util.Arrays;
-
-import br.com.ifpe.eventos.modelo.acesso.Perfil;
-import br.com.ifpe.eventos.modelo.acesso.Usuario;
 import br.com.ifpe.eventos.modelo.cliente.Cliente;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import br.com.ifpe.eventos.modelo.acesso.Usuario;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+// import lombok.AllArgsConstructor; 
+// import lombok.Builder;       
+// import lombok.Getter;         
+// import lombok.NoArgsConstructor;
+// import lombok.Setter;        
+
+// @Getter
+// @Setter
+// @Builder
+// @NoArgsConstructor
+// @AllArgsConstructor
 public class ClienteRequest {
 
-    @NotBlank(message = "O e-mail é de preenchimento obrigatório")
-    @Email
-    private String email;
-
-    @NotBlank(message = "A senha é de preenchimento obrigatório")
-    private String password;
-
-    @NotBlank(message = "O nome é de preenchimento obrigatório")
     private String nome;
 
-    @NotBlank(message = "A data de nascimento é de preenchimento obrigatório")
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    private UsuarioRequest usuario; 
+
+    @JsonFormat(pattern = "dd/MM/yyyy") 
     private LocalDate dataNascimento;
 
-    @NotBlank(message = "O telefone celular é de preenchimento obrigatório")
     private String foneCelular;
 
-     public Usuario buildUsuario() {
-       return Usuario.builder()
-           .username(email)
-           .password(password)
-           .roles(Arrays.asList(new Perfil(Perfil.ROLE_CLIENTE)))
-           .build();
-   }
-
-
     public Cliente build() {
+       
+        Usuario novoUsuario = Usuario.builder()
+            .username(this.usuario.getUsername())
+            .password(this.usuario.getPassword()) 
+            .build();
 
         return Cliente.builder()
-                
-                .usuario(buildUsuario())
-                .nome(nome)
-                .dataNascimento(dataNascimento)
-                .foneCelular(foneCelular)
-                .build();
+            .nome(this.nome)
+            .usuario(novoUsuario)
+            .dataNascimento(this.dataNascimento)
+            .foneCelular(this.foneCelular)
+            .build();
+    }
+    
+    public static class UsuarioRequest {
+        private String username;
+        private String password;
+
+        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+        public String getPassword() { return password; } 
+        public void setPassword(String password) { this.password = password; }
     }
 
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public UsuarioRequest getUsuario() { return usuario; }
+    public void setUsuario(UsuarioRequest usuario) { this.usuario = usuario; }
+    public LocalDate getDataNascimento() { return dataNascimento; }
+    public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
+    public String getFoneCelular() { return foneCelular; }
+    public void setFoneCelular(String foneCelular) { this.foneCelular = foneCelular; }
 }
