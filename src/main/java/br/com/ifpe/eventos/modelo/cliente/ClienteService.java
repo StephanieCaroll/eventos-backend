@@ -1,5 +1,7 @@
 package br.com.ifpe.eventos.modelo.cliente;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import br.com.ifpe.eventos.modelo.acesso.PerfilRepository;
 import br.com.ifpe.eventos.modelo.acesso.Usuario;
 import br.com.ifpe.eventos.modelo.acesso.UsuarioRepository;
 import br.com.ifpe.eventos.modelo.acesso.UsuarioService;
+import br.com.ifpe.eventos.modelo.evento.Evento;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -58,5 +61,33 @@ public class ClienteService {
     @Transactional
     public Cliente update(Cliente cliente) {
         return repository.save(cliente);
+    }
+
+    @Transactional
+    public void adicionarEventoFavorito(Cliente cliente, Evento evento) {
+        if (cliente.getEventosFavoritos() == null) {
+            cliente.setEventosFavoritos(new java.util.ArrayList<>());
+        }
+        if (!cliente.getEventosFavoritos().contains(evento)) { 
+            cliente.getEventosFavoritos().add(evento);
+            repository.save(cliente); 
+        }
+    }
+
+    @Transactional
+    public void removerEventoFavorito(Cliente cliente, Evento evento) {
+        if (cliente.getEventosFavoritos() != null) {
+            cliente.getEventosFavoritos().remove(evento);
+            repository.save(cliente); 
+        }
+    }
+
+    public List<Evento> getEventosFavoritos(Cliente cliente) {
+        if (cliente != null && cliente.getEventosFavoritos() != null) {
+          
+            cliente.getEventosFavoritos().size(); 
+            return List.copyOf(cliente.getEventosFavoritos()); 
+        }
+        return Collections.emptyList();
     }
 }

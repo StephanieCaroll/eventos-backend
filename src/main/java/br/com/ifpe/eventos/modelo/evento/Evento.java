@@ -2,6 +2,7 @@ package br.com.ifpe.eventos.modelo.evento;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 import org.hibernate.annotations.SQLRestriction;
 
@@ -23,7 +24,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Evento extends EntidadeAuditavel {
+public class Evento extends EntidadeAuditavel { 
 
     @Column
     private String nomeEvento;
@@ -66,4 +67,17 @@ public class Evento extends EntidadeAuditavel {
 
     @Column
     private LocalDate dataVendaFim;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Evento evento = (Evento) o;
+        return Objects.equals(getId(), evento.getId()); 
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }
