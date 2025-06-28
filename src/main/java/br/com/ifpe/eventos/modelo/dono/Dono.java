@@ -32,22 +32,17 @@ public class Dono extends EntidadeAuditavel {
     private Usuario usuario;
 
     @Column
-    private String razaoSocial; //Nome da empresa
+    private String razaoSocial;
 
     @Column
     private String nome;
 
-// @Column
-// private String email;
     @Column
     private String cpf;
 
     @Column
     private LocalDate dataNascimento;
 
-// @Column
-// private String senha;
     @Column
     private String foneCelular;
-
 }

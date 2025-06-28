@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DonoRequest {
 
-    private String razaoSocial; //nome da empresa
+    private String razaoSocial;
 
     private String nome;
 
@@ -43,21 +43,18 @@ public class DonoRequest {
         return Usuario.builder()
             .username(email)
             .password(password)
-            .roles(Arrays.asList(new Perfil(Perfil.ROLE_GERENCIADOR))) 
+            .roles(Arrays.asList(new Perfil(Perfil.ROLE_GERENCIADOR)))
             .build();
     }
 
-
     public Dono build() {
-
         return Dono.builder()
-                .razaoSocial(razaoSocial)
-                .nome(nome)
-                .cpf(cpf)
-                .dataNascimento(dataNascimento)
-                .foneCelular(foneCelular)
-                .usuario(buildUsuario())
-                .build();
+            .razaoSocial(razaoSocial)
+            .nome(nome)
+            .cpf(cpf)
+            .dataNascimento(dataNascimento)
+            .foneCelular(foneCelular)
+            .usuario(buildUsuario())
+            .build();
     }
-
 }

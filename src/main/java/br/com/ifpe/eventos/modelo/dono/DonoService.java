@@ -22,7 +22,6 @@ public class DonoService {
 
     @Transactional
     public Dono save(Dono dono) {
-
         usuarioService.save(dono.getUsuario());
 
         for (Perfil perfil : dono.getUsuario().getRoles()) {
@@ -32,5 +31,9 @@ public class DonoService {
 
         dono.setHabilitado(Boolean.TRUE);
         return repository.save(dono);
+    }
+
+    public Dono findByEmail(String email) {
+        return repository.findByUsuarioUsername(email).orElse(null);
     }
 }
