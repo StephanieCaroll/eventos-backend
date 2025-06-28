@@ -39,13 +39,13 @@ public class DonoRequest {
 
     private String foneCelular;
 
-   public Usuario buildUsuario() {
-       return Usuario.builder()
-           .username(email)
-           .password(password)
-           .roles(Arrays.asList(new Perfil(Perfil.ROLE_CLIENTE)))
-           .build();
-   }
+    public Usuario buildUsuario() {
+        return Usuario.builder()
+            .username(email)
+            .password(password)
+            .roles(Arrays.asList(new Perfil(Perfil.ROLE_GERENCIADOR))) 
+            .build();
+    }
 
 
     public Dono build() {
