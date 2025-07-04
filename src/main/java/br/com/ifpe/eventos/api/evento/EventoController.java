@@ -30,8 +30,8 @@ public class EventoController {
 
     @GetMapping
     public ResponseEntity<List<Evento>> findAll() {
-       
-        List<Evento> eventos = eventoRepository.findAll();
+      
+        List<Evento> eventos = eventoService.findAll(); 
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
 
@@ -66,7 +66,7 @@ public class EventoController {
         return eventoRepository.findById(id)
             .map(evento -> {
                 evento.setHabilitado(Boolean.FALSE); 
-                eventoService.salvar(evento);
+                eventoService.salvar(evento); 
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT); 
             })
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

@@ -1,6 +1,8 @@
 package br.com.ifpe.eventos.modelo.seguranca;
 
 import java.io.IOException;
+import java.util.Arrays; 
+import java.util.List;   
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,34 +27,76 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver) {
+    private static final List<String> PUBLIC_GET_ROUTES = Arrays.asList(
+            "/api/evento",
+            "/api/clientes/by-email/", 
+            "/api-docs",
+            "/swagger-ui"
+    );
 
+    private static final List<String> PUBLIC_POST_ROUTES = Arrays.asList(
+            "/api/clientes",
+            "/api/dono",
+            "/api/adm",
+            "/api/auth"
+    );
+
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService,
+                                   HandlerExceptionResolver handlerExceptionResolver) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        if ("GET".equalsIgnoreCase(method)) {
+            for (String publicRoute : PUBLIC_GET_ROUTES) {
+                if (publicRoute.endsWith("/")) { 
+                    if (path.startsWith(publicRoute)) {
+                        return true;
+                    }
+                } else if (path.equals(publicRoute) || path.startsWith(publicRoute + "/")) {
+                   
+                    return true;
+                }
+            }
+        }
+
+        if ("POST".equalsIgnoreCase(method)) {
+            for (String publicRoute : PUBLIC_POST_ROUTES) {
+                if (path.equals(publicRoute)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+
+            try {
+                throw new Exception("Token JWT ausente ou inválido.");
+            } catch (Exception exception) {
+                handlerExceptionResolver.resolveException(request, response, null, exception);
+                return; 
+            }
         }
 
         try {
-
             final String jwt = authHeader.substring(7);
             final String userEmail = jwtService.extractUsername(jwt);
-
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (userEmail != null && authentication == null) {
-
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
@@ -65,10 +109,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-
             filterChain.doFilter(request, response);
 
         } catch (Exception exception) {
+           
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
     }

@@ -18,7 +18,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "Evento")
-@SQLRestriction("habilitado = true")
+@SQLRestriction("habilitado = true") 
 @Builder
 @Getter
 @Setter

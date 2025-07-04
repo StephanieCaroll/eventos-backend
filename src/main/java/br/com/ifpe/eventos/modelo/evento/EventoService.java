@@ -15,7 +15,7 @@ public class EventoService {
 
     @Transactional 
     public Evento salvar(Evento evento) {
-        evento.setHabilitado(Boolean.TRUE);
+      
         return repository.save(evento);
     }
 
@@ -24,6 +24,7 @@ public class EventoService {
     }
 
     public List<Evento> findAll() {
+     
         return repository.findAll(); 
     }
 
