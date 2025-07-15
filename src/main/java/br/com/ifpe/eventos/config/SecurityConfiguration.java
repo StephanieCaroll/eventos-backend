@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod; 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/dono").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/adm").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/stand").permitAll()
 
                 .requestMatchers(HttpMethod.GET,"/api/evento").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/clientes/by-email/**").permitAll() 
