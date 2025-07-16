@@ -2,6 +2,7 @@ package br.com.ifpe.eventos.api.evento;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -19,30 +20,31 @@ public class EventoRequest {
 
     private String nomeEvento;
     private String descricao;
-
+    
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataInicio;
-
+    
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataFim;
-
+    
     private LocalTime horaInicio;
     private LocalTime horaFim;
-
     private String categoria;
     private String organizador;
     private String contatoOrganizador;
     private String urlImagem;
     private String tipoIngresso;
     private Integer quantidadeIngressos;
-
+    
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataVendaInicio;
-
+    
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataVendaFim;
-
-    public Evento build() {
+    
+    private List<Long> idsStands; 
+    
+    public Evento buildEvento() {
         return Evento.builder()
             .nomeEvento(nomeEvento)
             .descricao(descricao)
@@ -59,5 +61,10 @@ public class EventoRequest {
             .dataVendaInicio(dataVendaInicio)
             .dataVendaFim(dataVendaFim)
             .build();
+    }
+
+    public List<Long> getIdsStands() {
+        return this.idsStands;
+        
     }
 }

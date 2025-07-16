@@ -22,37 +22,39 @@ import br.com.ifpe.eventos.modelo.stand.StandService;
 @RequestMapping("/api/stand") // especifica o endereço do controller
 @CrossOrigin 
 public class StandController {
-     @Autowired //vai instanciar objetos do tipo ClienteService e colocar dentro da variável, para que ela seja utilizada em  todas funções do controller 
-   private StandService standService;
+   @Autowired
+    private StandService standService;
 
-   @PostMapping//especifica que essa função vai receber requisição post
-   public ResponseEntity <Stand> save(@RequestBody StandRequest request) {
+    @PostMapping
+    public ResponseEntity<Stand> save(@RequestBody StandRequest request) {
+        Stand stand = standService.save(request.build());
+        return new ResponseEntity<>(stand, HttpStatus.CREATED);
+    }
 
-       Stand stand = standService.save(request.build());
-       return new ResponseEntity<Stand>(stand, HttpStatus.CREATED);
-   }
-   @GetMapping //vai retornar uma lista com todos os clientes
+    @GetMapping
     public List<Stand> listarTodos() {
-
         return standService.listarTodos();
     }
 
-  
-    @GetMapping("/{id}") //retorna o cliente pesquisado pelo id
+    @GetMapping("/disponiveis")
+    public List<Stand> listarStandsDisponiveis() {
+        return standService.listarStandsDisponiveis();
+    }
+
+    @GetMapping("/{id}")
     public Stand obterPorID(@PathVariable Long id) {
         return standService.obterPorID(id);
     }
 
-     @PutMapping("/{id}") //informar via url o id do produto | abaixo ele passa os dados do produto alterado no corpo da requisição
- public ResponseEntity <Stand> update(@PathVariable("id") Long id, @RequestBody StandRequest request) {
-  //passando os dados para a função update
-       standService.update(id, request.build());
-       return ResponseEntity.ok().build();
- }
-@DeleteMapping("/{id}")
-   public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Stand> update(@PathVariable("id") Long id, @RequestBody StandRequest request) {
+        standService.update(id, request.build());
+        return ResponseEntity.ok().build();
+    }
 
-       standService.delete(id);
-       return ResponseEntity.ok().build();
-   }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        standService.delete(id);
+        return ResponseEntity.ok().build();
+    }
 }

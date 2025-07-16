@@ -9,46 +9,43 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class StandService {
+    
      @Autowired
     private StandRepository repository;
-    @Transactional //Quando colocada em cima de uma função, ela abre um escopo de transação no banco para a mesma (ou tudo funciona, ounada vai ser rodado)
-   public Stand save(Stand stand) {
 
-       stand.setHabilitado(Boolean.TRUE);
-      
-       Stand s = repository.save(stand); // chama a função salvar, gravando no banco. retorna o objeto que acabou de ser gravado no banco
-       
-       return s;
-   }
-    //select * from clienteS
-   public List<Stand> listarTodos() {
-  
+    @Transactional
+    public Stand save(Stand stand) {
+        stand.setHabilitado(Boolean.TRUE);
+        return repository.save(stand);
+    }
+
+    public List<Stand> listarTodos() {
         return repository.findAll();
     }
-   //select * from cliente where
-    public Stand obterPorID(Long id) {
 
-        return repository.findById(id).get();
+    public List<Stand> listarStandsDisponiveis() {
+        return repository.findByEventoIsNull();
     }
 
-     @Transactional
-   public void update(Long id, Stand standAlterado) {
+    public List<Stand> findAllById(List<Long> ids) {
+        return repository.findAllById(ids);
+    }
 
-      Stand stand = repository.findById(id).get(); //vai colsultar o cliente no banco
-      stand.setCodigo(standAlterado.getCodigo());
+    public Stand obterPorID(Long id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Stand não encontrado"));
+    }
 
-	//acima é onde se faz a alteração
-      repository.save(standAlterado);//como o cliente 
-  }
+    @Transactional
+    public void update(Long id, Stand standAlterado) {
+        Stand stand = repository.findById(id).get();
+        stand.setCodigo(standAlterado.getCodigo());
+        repository.save(stand);
+    }
 
-   @Transactional
-   public void delete(Long id) {
-
-       Stand stand = repository.findById(id).get();
-       stand.setHabilitado(Boolean.FALSE);
-
-       repository.save(stand);
-   }
-
-
+    @Transactional
+    public void delete(Long id) {
+        Stand stand = repository.findById(id).get();
+        stand.setHabilitado(Boolean.FALSE);
+        repository.save(stand);
+    }
 }
