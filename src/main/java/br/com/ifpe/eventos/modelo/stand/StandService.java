@@ -9,12 +9,13 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class StandService {
-    
-     @Autowired
+
+    @Autowired
     private StandRepository repository;
 
     @Transactional
     public Stand save(Stand stand) {
+      
         stand.setHabilitado(Boolean.TRUE);
         return repository.save(stand);
     }
@@ -24,6 +25,7 @@ public class StandService {
     }
 
     public List<Stand> listarStandsDisponiveis() {
+     
         return repository.findByEventoIsNull();
     }
 
@@ -31,21 +33,33 @@ public class StandService {
         return repository.findAllById(ids);
     }
 
+    public List<Stand> getRegisteredStandsByUserId(String username) {
+       
+        return repository.findByUsuarioUsername(username);
+    }
+
+    public List<Stand> findByUsuarioUsernameAndEventoId(String username, Long eventId) {
+        return repository.findByUsuarioUsernameAndEventoId(username, eventId);
+    }
+
     public Stand obterPorID(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Stand não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Stand não encontrado ou desabilitado."));
     }
 
     @Transactional
     public void update(Long id, Stand standAlterado) {
-        Stand stand = repository.findById(id).get();
+      
+        Stand stand = repository.findById(id).orElseThrow(() -> new RuntimeException("Stand não encontrado para atualização."));
+
         stand.setCodigo(standAlterado.getCodigo());
-        repository.save(stand);
+       
+        repository.save(stand); 
     }
 
     @Transactional
     public void delete(Long id) {
-        Stand stand = repository.findById(id).get();
-        stand.setHabilitado(Boolean.FALSE);
+        Stand stand = repository.findById(id).orElseThrow(() -> new RuntimeException("Stand não encontrado para exclusão."));
+        stand.setHabilitado(Boolean.FALSE); // Realiza soft delete
         repository.save(stand);
     }
 }

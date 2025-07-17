@@ -13,16 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.eventos.modelo.stand.Stand;
 import br.com.ifpe.eventos.modelo.stand.StandService;
 
-@RestController //determina a classe como controller
-@RequestMapping("/api/stand") // especifica o endereço do controller
-@CrossOrigin 
+@RestController
+@RequestMapping("/api/stand") 
+@CrossOrigin
 public class StandController {
-   @Autowired
+
+    @Autowired
     private StandService standService;
 
     @PostMapping
@@ -37,8 +39,23 @@ public class StandController {
     }
 
     @GetMapping("/disponiveis")
-    public List<Stand> listarStandsDisponiveis() {
-        return standService.listarStandsDisponiveis();
+    public List<Stand> listarStandsDisponiveis(@RequestParam(required = false) Long eventId) {
+      
+        return standService.listarStandsDisponiveis(); 
+    }
+
+    @GetMapping("/usuario") // Agora o endpoint é /api/stand/usuario
+    public ResponseEntity<List<Stand>> getStandsDoUsuarioPorEvento(
+            @RequestParam String userId, 
+            @RequestParam Long eventId) {
+        List<Stand> stands = standService.findByUsuarioUsernameAndEventoId(userId, eventId);
+        return new ResponseEntity<>(stands, HttpStatus.OK);
+    }
+
+    @GetMapping("/registered")
+    public ResponseEntity<List<Stand>> getRegisteredStandsByUserId(@RequestParam String userId) {
+        List<Stand> stands = standService.getRegisteredStandsByUserId(userId);
+        return new ResponseEntity<>(stands, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

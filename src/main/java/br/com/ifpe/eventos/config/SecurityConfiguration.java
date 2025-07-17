@@ -42,6 +42,9 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/adm").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/stand").permitAll()
 
+                .requestMatchers(HttpMethod.GET, "/api/stand/disponiveis").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stand/my-stands-by-event").permitAll()
+
                 .requestMatchers(HttpMethod.GET,"/api/evento").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/clientes/by-email/**").permitAll() 
                 

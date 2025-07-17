@@ -5,8 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StandRepository extends JpaRepository<Stand, Long> {
-    
+
     List<Stand> findByEventoIsNull();
-    
+
     List<Stand> findAllById(Iterable<Long> ids);
+
+    List<Stand> findByUsuarioUsername(String username);
+
+    List<Stand> findByUsuarioUsernameAndEventoId(String username, Long eventId);
 }

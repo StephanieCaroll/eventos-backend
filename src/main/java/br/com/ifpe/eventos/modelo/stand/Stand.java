@@ -15,15 +15,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Entity
-@Table(name = "Dono")
+@Table(name = "Stand")
 @SQLRestriction("habilitado = true")
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Stand extends  EntidadeAuditavel {
+public class Stand extends EntidadeAuditavel {
     
    @Column
     private String codigo;
@@ -35,5 +36,4 @@ public class Stand extends  EntidadeAuditavel {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-
 }
