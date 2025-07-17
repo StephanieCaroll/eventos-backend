@@ -1,7 +1,6 @@
 package br.com.ifpe.eventos.api.evento;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.eventos.modelo.evento.Evento;
 import br.com.ifpe.eventos.modelo.evento.EventoService;
-import br.com.ifpe.eventos.modelo.stand.Stand;
-import br.com.ifpe.eventos.modelo.stand.StandService;
 
 @RestController
 @RequestMapping("/api/evento")
@@ -29,22 +26,11 @@ public class EventoController {
     @Autowired
     private EventoService eventoService;
 
-    @Autowired
-    private StandService standService; // Injetar StandService
 
     @PostMapping
     public ResponseEntity<Evento> save(@RequestBody EventoRequest request) {
-        Evento evento = request.buildEvento();
-
-        // Se IDs de stands forem fornecidos, busque os stands e associe-os ao evento
-        if (request.getIdsStands() != null && !request.getIdsStands().isEmpty()) {
-            List<Stand> stands = request.getIdsStands().stream()
-                                    .map(id -> standService.obterPorID(id)) // Assumindo que obterPorID retorna Stand
-                                    .collect(Collectors.toList());
-            evento.setStands(stands);
-        }
-
-        Evento eventoSalvo = eventoService.salvar(evento);
+     
+        Evento eventoSalvo = eventoService.salvar(request);
         return new ResponseEntity<>(eventoSalvo, HttpStatus.CREATED);
     }
 
@@ -60,19 +46,8 @@ public class EventoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Evento> update(@PathVariable("id") Long id, @RequestBody EventoRequest request) {
-        Evento eventoAlterado = request.buildEvento();
 
-        // Se IDs de stands forem fornecidos, busque os stands e associe-os ao evento
-        if (request.getIdsStands() != null && !request.getIdsStands().isEmpty()) {
-            List<Stand> stands = request.getIdsStands().stream()
-                                    .map(standService::obterPorID)
-                                    .collect(Collectors.toList());
-            eventoAlterado.setStands(stands);
-        } else {
-            eventoAlterado.setStands(null); // Se nenhum stand for enviado, remove as associações existentes.
-        }
-
-        Evento eventoAtualizado = eventoService.update(id, eventoAlterado);
+        Evento eventoAtualizado = eventoService.update(id, request);
         return ResponseEntity.ok(eventoAtualizado);
     }
 
