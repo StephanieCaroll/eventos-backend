@@ -1,7 +1,5 @@
 package br.com.ifpe.eventos.api.acesso;
 
-import java.io.Serializable;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

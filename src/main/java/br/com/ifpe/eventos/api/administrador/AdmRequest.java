@@ -2,17 +2,18 @@ package br.com.ifpe.eventos.api.administrador;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.ifpe.eventos.modelo.acesso.Perfil;
 import br.com.ifpe.eventos.modelo.acesso.Usuario;
 import br.com.ifpe.eventos.modelo.administrador.Adm;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 @Data
 @Builder
@@ -42,7 +43,7 @@ public class AdmRequest {
         return Usuario.builder()
                 .username(email)
                 .password(password)
-                .roles(Arrays.asList(new Perfil(Perfil.ROLE_CLIENTE)))
+                .roles(Arrays.asList(new Perfil("ROLE_ADM")))
                 .build();
     }
 

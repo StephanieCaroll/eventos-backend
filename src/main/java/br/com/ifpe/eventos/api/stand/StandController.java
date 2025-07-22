@@ -1,5 +1,6 @@
 package br.com.ifpe.eventos.api.stand;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class StandController {
 
     @PostMapping
     public ResponseEntity<Stand> save(@RequestBody StandRequest request) {
-        Stand stand = standService.save(request.build());
+        Stand stand = standService.save(request);
         return new ResponseEntity<>(stand, HttpStatus.CREATED);
     }
 
@@ -44,18 +45,28 @@ public class StandController {
         return standService.listarStandsDisponiveis(); 
     }
 
-    @GetMapping("/usuario") // Agora o endpoint é /api/stand/usuario
+    @GetMapping("/usuario") 
     public ResponseEntity<List<Stand>> getStandsDoUsuarioPorEvento(
             @RequestParam String userId, 
             @RequestParam Long eventId) {
-        List<Stand> stands = standService.findByUsuarioUsernameAndEventoId(userId, eventId);
-        return new ResponseEntity<>(stands, HttpStatus.OK);
+        try {
+            List<Stand> stands = standService.findByUsuarioUsernameAndEventoId(userId, eventId);
+            return new ResponseEntity<>(stands, HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar stands do usuário por evento: " + e.getMessage());
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/registered")
     public ResponseEntity<List<Stand>> getRegisteredStandsByUserId(@RequestParam String userId) {
-        List<Stand> stands = standService.getRegisteredStandsByUserId(userId);
-        return new ResponseEntity<>(stands, HttpStatus.OK);
+        try {
+            List<Stand> stands = standService.getRegisteredStandsByUserId(userId);
+            return new ResponseEntity<>(stands, HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar stands registrados do usuário: " + e.getMessage());
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{id}")

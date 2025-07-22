@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StandRequest {
     private String codigo;
+    private String userId; // ID do usuário que está cadastrando/selecionando o stand
+    private Long eventoId; // ID do evento (opcional, para quando o stand é associado a um evento)
 
      public Stand build() {
 

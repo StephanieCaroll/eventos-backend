@@ -39,11 +39,14 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/dono").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/adm").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/administrador").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/stand").permitAll()
 
+                .requestMatchers(HttpMethod.GET, "/api/stand").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stand/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stand/disponiveis").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/stand/my-stands-by-event").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stand/usuario").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stand/registered").permitAll()
 
                 .requestMatchers(HttpMethod.GET,"/api/evento").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/clientes/by-email/**").permitAll() 

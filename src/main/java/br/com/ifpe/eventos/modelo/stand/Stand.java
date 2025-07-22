@@ -25,14 +25,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Stand extends EntidadeAuditavel {
-    
-   @Column
+
+    @Column
     private String codigo;
-    
+
+    @Column
+    private String descricao;
+
     @ManyToOne
     @JoinColumn(name = "evento_id")
     private Evento evento;
-    
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

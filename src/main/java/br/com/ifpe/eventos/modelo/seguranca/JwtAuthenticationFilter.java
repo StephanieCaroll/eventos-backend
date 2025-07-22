@@ -1,12 +1,11 @@
 package br.com.ifpe.eventos.modelo.seguranca;
 
 import java.io.IOException;
-import java.util.Arrays; 
-import java.util.List;   
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,6 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> PUBLIC_GET_ROUTES = Arrays.asList(
             "/api/evento",
             "/api/clientes/by-email/", 
+            "/api/stand",
+            "/api/stand/disponiveis",
+            "/api/stand/usuario",
+            "/api/stand/registered",
             "/api-docs",
             "/swagger-ui"
     );
