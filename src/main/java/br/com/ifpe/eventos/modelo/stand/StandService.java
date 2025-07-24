@@ -109,15 +109,24 @@ public class StandService {
 
     // Novo método para listar stands com informações de seleção
     public List<StandSelectionDTO> listarStandsParaSelecao(Long eventoId, String userId) {
-        List<Stand> todosStands = repository.findAll();
+        List<Stand> stands;
+        
+        if (eventoId != null) {
+            // Se um evento específico foi solicitado, buscar apenas stands vinculados a esse evento
+            stands = repository.findByEventoId(eventoId);
+        } else {
+            // Se nenhum evento específico, buscar stands sem evento vinculado (disponíveis para cadastro)
+            stands = repository.findByEventoIsNull();
+        }
+        
         List<StandSelectionDTO> standsParaSelecao = new ArrayList<>();
         
-        for (Stand stand : todosStands) {
+        for (Stand stand : stands) {
             StandSelectionDTO dto = StandSelectionDTO.builder()
                 .id(stand.getId())
                 .codigo(stand.getCodigo())
                 .descricao(stand.getDescricao())
-                .disponivel(stand.getEvento() == null || (eventoId != null && stand.getEvento().getId().equals(eventoId)))
+                .disponivel(stand.getUsuario() == null) // Disponível se não tem usuário
                 .selecionado(userId != null && stand.getUsuario() != null && 
                            stand.getUsuario().getUsername().equals(userId))
                 .nomeEvento(stand.getEvento() != null ? stand.getEvento().getNomeEvento() : null)
@@ -135,7 +144,6 @@ public class StandService {
     public List<Stand> processarReservaStands(StandReservaDTO reservaDTO) {
         List<Stand> standsProcessados = new ArrayList<>();
         Usuario usuario = null;
-        Evento evento = null;
 
         try {
             // Validação dos parâmetros de entrada
@@ -159,12 +167,6 @@ public class StandService {
                 }
             }
 
-            // Buscar evento se fornecido
-            if (reservaDTO.getEventoId() != null) {
-                evento = eventoRepository.findById(reservaDTO.getEventoId())
-                    .orElseThrow(() -> new RuntimeException("Evento não encontrado com ID: " + reservaDTO.getEventoId()));
-            }
-
             // Processar cada stand
             for (Long standId : reservaDTO.getStandIds()) {
                 try {
@@ -172,13 +174,18 @@ public class StandService {
                         .orElseThrow(() -> new RuntimeException("Stand não encontrado com ID: " + standId));
 
                     if ("RESERVAR".equals(reservaDTO.getTipoOperacao())) {
-                        // Verificar se stand está disponível
-                        if (stand.getEvento() != null && !stand.getEvento().getId().equals(reservaDTO.getEventoId())) {
-                            throw new RuntimeException("Stand " + stand.getCodigo() + " já está ocupado por outro evento.");
+                        // Verificar se stand está disponível e vinculado ao evento correto
+                        if (stand.getEvento() == null) {
+                            throw new RuntimeException("Stand " + stand.getCodigo() + " não está vinculado a nenhum evento.");
+                        }
+                        if (!stand.getEvento().getId().equals(reservaDTO.getEventoId())) {
+                            throw new RuntimeException("Stand " + stand.getCodigo() + " não está disponível para este evento.");
+                        }
+                        if (stand.getUsuario() != null) {
+                            throw new RuntimeException("Stand " + stand.getCodigo() + " já está ocupado.");
                         }
                         
                         stand.setUsuario(usuario);
-                        stand.setEvento(evento);
                         if (reservaDTO.getDescricaoReserva() != null) {
                             stand.setDescricao(reservaDTO.getDescricaoReserva());
                         }
@@ -189,7 +196,8 @@ public class StandService {
                         }
                         
                         stand.setUsuario(null);
-                        stand.setEvento(null);
+                        // Manter o stand vinculado ao evento
+                        // stand.setEvento(null); - Comentado para manter a vinculação
                         stand.setDescricao("Stand " + stand.getCodigo() + " - Disponível para reserva");
                     } else {
                         throw new RuntimeException("Tipo de operação inválido: " + reservaDTO.getTipoOperacao() + ". Use 'RESERVAR' ou 'LIBERAR'.");
@@ -257,7 +265,7 @@ public class StandService {
             .id(stand.getId())
             .codigo(stand.getCodigo())
             .descricao(stand.getDescricao())
-            .disponivel(stand.getEvento() == null)
+            .disponivel(stand.getUsuario() == null) // Disponível se não tem usuário reservado
             .selecionado(userId != null && stand.getUsuario() != null && 
                        stand.getUsuario().getUsername().equals(userId))
             .nomeEvento(stand.getEvento() != null ? stand.getEvento().getNomeEvento() : null)

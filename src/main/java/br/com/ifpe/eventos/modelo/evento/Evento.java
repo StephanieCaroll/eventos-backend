@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import org.hibernate.annotations.SQLRestriction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.ifpe.eventos.modelo.stand.Stand;
 import br.com.ifpe.eventos.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
@@ -79,6 +81,7 @@ public class Evento extends EntidadeAuditavel {
         joinColumns = @JoinColumn(name = "evento_id"),
         inverseJoinColumns = @JoinColumn(name = "stand_id")
     )
+    @JsonIgnore
     private List<Stand> stands;
 
     @Override

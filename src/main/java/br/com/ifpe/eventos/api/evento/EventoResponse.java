@@ -3,9 +3,10 @@ package br.com.ifpe.eventos.api.evento;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import br.com.ifpe.eventos.modelo.evento.Evento;
-import br.com.ifpe.eventos.modelo.stand.Stand;
+import br.com.ifpe.eventos.modelo.stand.dto.StandSimpleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,28 +32,8 @@ public class EventoResponse {
     private Integer quantidadeIngressos;
     private LocalDate dataVendaInicio;
     private LocalDate dataVendaFim;
-    private List<StandSummary> stands;
-    
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class StandSummary {
-        private Long id;
-        private String codigo;
-        private String descricao;
-        private String emailUsuario;
-        
-        public static StandSummary fromStand(Stand stand) {
-            return StandSummary.builder()
-                .id(stand.getId())
-                .codigo(stand.getCodigo())
-                .descricao(stand.getDescricao())
-                .emailUsuario(stand.getUsuario() != null ? stand.getUsuario().getUsername() : null)
-                .build();
-        }
-    }
-    
+    private List<StandSimpleDTO> stands;
+
     public static EventoResponse fromEvento(Evento evento) {
         return EventoResponse.builder()
             .id(evento.getId())
@@ -72,9 +53,9 @@ public class EventoResponse {
             .dataVendaFim(evento.getDataVendaFim())
             .stands(evento.getStands() != null ? 
                 evento.getStands().stream()
-                    .map(StandSummary::fromStand)
-                    .collect(java.util.stream.Collectors.toList()) : 
-                java.util.Collections.emptyList())
+                    .map(StandSimpleDTO::fromStand)
+                    .collect(Collectors.toList()) : 
+                List.of())
             .build();
     }
 }

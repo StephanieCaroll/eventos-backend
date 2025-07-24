@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import br.com.ifpe.eventos.modelo.evento.Evento;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,16 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventoRequest {
-
     private String nomeEvento;
     private String descricao;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataInicio;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataFim;
-    
     private LocalTime horaInicio;
     private LocalTime horaFim;
     private String categoria;
@@ -35,36 +27,26 @@ public class EventoRequest {
     private String urlImagem;
     private String tipoIngresso;
     private Integer quantidadeIngressos;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataVendaInicio;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataVendaFim;
-    
-    private List<Long> idsStands; 
-    
+    private List<Long> idsStands;
+
     public Evento buildEvento() {
         return Evento.builder()
-            .nomeEvento(nomeEvento)
-            .descricao(descricao)
-            .dataInicio(dataInicio)
-            .dataFim(dataFim)
-            .horaInicio(horaInicio)
-            .horaFim(horaFim)
-            .categoria(categoria)
-            .organizador(organizador)
-            .contatoOrganizador(contatoOrganizador)
-            .urlImagem(urlImagem)
-            .tipoIngresso(tipoIngresso)
-            .quantidadeIngressos(quantidadeIngressos)
-            .dataVendaInicio(dataVendaInicio)
-            .dataVendaFim(dataVendaFim)
+            .nomeEvento(this.nomeEvento)
+            .descricao(this.descricao)
+            .dataInicio(this.dataInicio)
+            .dataFim(this.dataFim)
+            .horaInicio(this.horaInicio)
+            .horaFim(this.horaFim)
+            .categoria(this.categoria)
+            .organizador(this.organizador)
+            .contatoOrganizador(this.contatoOrganizador)
+            .urlImagem(this.urlImagem)
+            .tipoIngresso(this.tipoIngresso)
+            .quantidadeIngressos(this.quantidadeIngressos)
+            .dataVendaInicio(this.dataVendaInicio)
+            .dataVendaFim(this.dataVendaFim)
             .build();
-    }
-
-    public List<Long> getIdsStands() {
-        return this.idsStands;
-        
     }
 }

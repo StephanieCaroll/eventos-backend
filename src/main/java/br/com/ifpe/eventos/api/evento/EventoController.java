@@ -1,5 +1,6 @@
 package br.com.ifpe.eventos.api.evento;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.eventos.modelo.evento.Evento;
 import br.com.ifpe.eventos.modelo.evento.EventoService;
+import br.com.ifpe.eventos.modelo.stand.Stand;
 import br.com.ifpe.eventos.modelo.stand.dto.StandSelectionDTO;
 
 @RestController
@@ -64,19 +66,103 @@ public class EventoController {
     @GetMapping("/{id}/stands-disponiveis")
     public ResponseEntity<List<StandSelectionDTO>> getStandsDisponiveisParaEvento(@PathVariable Long id) {
         try {
-            // Este endpoint poderia usar o StandService diretamente
-            // mas mantendo a responsabilidade no EventoService se necessário
             Evento evento = eventoService.findById(id);
             if (evento == null) {
                 return ResponseEntity.notFound().build();
             }
             
-            // Por enquanto, retornamos uma lista vazia - a implementação real
-            // deveria usar um método no EventoService que usa o StandService
-            return ResponseEntity.ok(List.of());
+            // Buscar stands vinculados ao evento
+            List<Stand> standsDoEvento = eventoService.getStandsDoEvento(id);
+            List<StandSelectionDTO> standsDTO = new ArrayList<>();
+            
+            for (Stand stand : standsDoEvento) {
+                StandSelectionDTO dto = StandSelectionDTO.builder()
+                    .id(stand.getId())
+                    .codigo(stand.getCodigo())
+                    .descricao(stand.getDescricao())
+                    .disponivel(stand.getUsuario() == null)
+                    .selecionado(false)
+                    .nomeEvento(evento.getNomeEvento())
+                    .eventoId(evento.getId())
+                    .emailUsuario(stand.getUsuario() != null ? stand.getUsuario().getUsername() : null)
+                    .build();
+                standsDTO.add(dto);
+            }
+            
+            return ResponseEntity.ok(standsDTO);
         } catch (Exception e) {
             System.err.println("Erro ao buscar stands disponíveis para evento: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+        }
+    }
+
+    // Endpoint para obter stands não vinculados (disponíveis para cadastro em eventos)
+    @GetMapping("/stands-sem-vinculo")
+    public ResponseEntity<List<StandSelectionDTO>> getStandsSemVinculo() {
+        try {
+            // Buscar stands sem evento vinculado
+            List<Stand> standsSemEvento = eventoService.getStandsDoEvento(null); // Busca stands sem evento
+            List<StandSelectionDTO> standsDTO = new ArrayList<>();
+            
+            for (Stand stand : standsSemEvento) {
+                StandSelectionDTO dto = StandSelectionDTO.builder()
+                    .id(stand.getId())
+                    .codigo(stand.getCodigo())
+                    .descricao(stand.getDescricao())
+                    .disponivel(true)
+                    .selecionado(false)
+                    .nomeEvento(null)
+                    .eventoId(null)
+                    .emailUsuario(null)
+                    .build();
+                standsDTO.add(dto);
+            }
+            
+            return ResponseEntity.ok(standsDTO);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar stands sem vínculo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+        }
+    }
+
+    // Endpoint para vincular stands a um evento
+    @PostMapping("/{id}/vincular-stands")
+    public ResponseEntity<?> vincularStandsAoEvento(@PathVariable Long id, @RequestBody EventoStandRequest request) {
+        try {
+            // Validação
+            if (request.getStandIds() == null || request.getStandIds().isEmpty()) {
+                return ResponseEntity.badRequest().body("Lista de stands não pode estar vazia");
+            }
+
+            Evento evento = eventoService.findById(id);
+            if (evento == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Usar o método update para vincular os stands
+            EventoRequest eventoRequest = EventoRequest.builder()
+                .nomeEvento(evento.getNomeEvento())
+                .descricao(evento.getDescricao())
+                .dataInicio(evento.getDataInicio())
+                .dataFim(evento.getDataFim())
+                .horaInicio(evento.getHoraInicio())
+                .horaFim(evento.getHoraFim())
+                .categoria(evento.getCategoria())
+                .organizador(evento.getOrganizador())
+                .contatoOrganizador(evento.getContatoOrganizador())
+                .urlImagem(evento.getUrlImagem())
+                .tipoIngresso(evento.getTipoIngresso())
+                .quantidadeIngressos(evento.getQuantidadeIngressos())
+                .dataVendaInicio(evento.getDataVendaInicio())
+                .dataVendaFim(evento.getDataVendaFim())
+                .idsStands(request.getStandIds())
+                .build();
+
+            Evento eventoAtualizado = eventoService.update(id, eventoRequest);
+            return ResponseEntity.ok(EventoResponse.fromEvento(eventoAtualizado));
+        } catch (Exception e) {
+            System.err.println("Erro ao vincular stands ao evento: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor: " + e.getMessage());
         }
     }
 }

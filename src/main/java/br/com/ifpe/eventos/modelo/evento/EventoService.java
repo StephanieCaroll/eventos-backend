@@ -25,18 +25,25 @@ public class EventoService {
     @Transactional
     public Evento salvar(EventoRequest request) {
         Evento evento = request.buildEvento();
+        evento.setHabilitado(Boolean.TRUE);
 
+        // Primeiro salvar o evento
+        Evento eventoSalvo = repository.save(evento);
+
+        // Depois vincular os stands se fornecidos
         if (request.getIdsStands() != null && !request.getIdsStands().isEmpty()) {
             List<Stand> stands = standRepository.findAllById(request.getIdsStands());
-            evento.setStands(stands);
-        } else {
-            evento.setStands(Collections.emptyList());
+            
+            // Vincular cada stand ao evento
+            for (Stand stand : stands) {
+                stand.setEvento(eventoSalvo);
+                standRepository.save(stand);
+            }
+            
+            eventoSalvo.setStands(stands);
+            eventoSalvo = repository.save(eventoSalvo);
         }
 
-        Evento eventoSalvo = repository.save(evento);
-        // Inicializa a coleção de stands para garantir que seja carregada antes de retornar
-        // Se ela já foi definida acima, este peek apenas garante o carregamento se a lógica de cima falhar por algum motivo
-        eventoSalvo.getStands().size(); 
         return eventoSalvo;
     }
 
@@ -72,6 +79,7 @@ public class EventoService {
 
         Evento eventoExistente = optionalEvento.get();
 
+        // Atualizar campos básicos do evento
         eventoExistente.setNomeEvento(request.getNomeEvento());
         eventoExistente.setDescricao(request.getDescricao());
         eventoExistente.setDataInicio(request.getDataInicio());
@@ -87,21 +95,55 @@ public class EventoService {
         eventoExistente.setDataVendaInicio(request.getDataVendaInicio());
         eventoExistente.setDataVendaFim(request.getDataVendaFim());
 
+        // Gerenciar vinculação de stands
         if (request.getIdsStands() != null && !request.getIdsStands().isEmpty()) {
+            // Remover vinculação de stands anteriores
+            List<Stand> standsAntigos = standRepository.findByEventoId(id);
+            for (Stand standAntigo : standsAntigos) {
+                if (!request.getIdsStands().contains(standAntigo.getId())) {
+                    standAntigo.setEvento(null);
+                    standRepository.save(standAntigo);
+                }
+            }
+            
+            // Vincular novos stands
             List<Stand> novosStands = standRepository.findAllById(request.getIdsStands());
+            for (Stand stand : novosStands) {
+                stand.setEvento(eventoExistente);
+                standRepository.save(stand);
+            }
+            
             eventoExistente.setStands(novosStands);
         } else {
+            // Remover todos os stands vinculados
+            List<Stand> standsAntigos = standRepository.findByEventoId(id);
+            for (Stand standAntigo : standsAntigos) {
+                standAntigo.setEvento(null);
+                standRepository.save(standAntigo);
+            }
             eventoExistente.setStands(Collections.emptyList());
         }
 
         Evento eventoAtualizado = repository.save(eventoExistente);
-    
-        eventoAtualizado.getStands().size();
         return eventoAtualizado;
     }
 
     @Transactional
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    // Método para obter stands disponíveis para um evento específico
+    public List<Stand> getStandsDisponiveisParaEvento(Long eventoId) {
+        return standRepository.findStandsDisponiveisParaEvento(eventoId);
+    }
+
+    // Método para obter todos os stands vinculados a um evento
+    public List<Stand> getStandsDoEvento(Long eventoId) {
+        if (eventoId == null) {
+            // Retorna stands sem evento vinculado (para cadastro)
+            return standRepository.findByEventoIsNull();
+        }
+        return standRepository.findByEventoId(eventoId);
     }
 }

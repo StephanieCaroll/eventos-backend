@@ -19,6 +19,8 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Verificar se já existem stands cadastrados
         if (standService.listarTodos().isEmpty()) {
+            System.out.println("Criando stands iniciais para o sistema...");
+            
             // Criar stands organizados em uma grade para facilitar seleção visual
             String[] standCodes = {
                 // Fileira A (front row)
@@ -44,13 +46,18 @@ public class DataLoader implements CommandLineRunner {
             for (String code : standCodes) {
                 Stand stand = Stand.builder()
                     .codigo(code)
-                    .descricao("Stand " + code + " - Disponível para reserva")
+                    .descricao("Stand " + code + " - Disponível para cadastro em eventos")
+                    .evento(null) // Inicialmente sem vinculação a evento
+                    .usuario(null) // Inicialmente sem usuário
                     .build();
                 standService.save(stand);
                 System.out.println("Stand '" + code + "' cadastrado com sucesso.");
             }
             
             System.out.println("Total de " + standCodes.length + " stands cadastrados no sistema.");
+            System.out.println("Os stands estão disponíveis para serem vinculados a eventos pelo gerenciador.");
+        } else {
+            System.out.println("Stands já existem no sistema. Total: " + standService.listarTodos().size());
         }
     }
 }

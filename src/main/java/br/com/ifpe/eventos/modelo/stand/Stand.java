@@ -2,8 +2,6 @@ package br.com.ifpe.eventos.modelo.stand;
 
 import org.hibernate.annotations.SQLRestriction;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import br.com.ifpe.eventos.modelo.acesso.Usuario;
 import br.com.ifpe.eventos.modelo.evento.Evento;
 import br.com.ifpe.eventos.util.entity.EntidadeAuditavel;
@@ -36,7 +34,6 @@ public class Stand extends EntidadeAuditavel {
 
     @ManyToOne
     @JoinColumn(name = "evento_id")
-    @JsonIgnore
     private Evento evento;
 
     @ManyToOne
