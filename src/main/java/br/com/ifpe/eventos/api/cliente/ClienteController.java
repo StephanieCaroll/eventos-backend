@@ -6,19 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping; 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.eventos.modelo.cliente.Cliente;
 import br.com.ifpe.eventos.modelo.cliente.ClienteService;
-import br.com.ifpe.eventos.modelo.evento.Evento; 
-import br.com.ifpe.eventos.modelo.evento.EventoService; 
+import br.com.ifpe.eventos.modelo.evento.Evento;
+import br.com.ifpe.eventos.modelo.evento.EventoService;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -28,8 +29,8 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    @Autowired 
-    private EventoService eventoService; 
+    @Autowired
+    private EventoService eventoService;
 
     @PostMapping
     public ResponseEntity<Cliente> save(@RequestBody ClienteRequest request) {
@@ -48,7 +49,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> update(@PathVariable Long id, @RequestBody ClienteRequest request) { 
+    public ResponseEntity<Cliente> update(@PathVariable Long id, @RequestBody ClienteRequest request) {
         try {
             Cliente clienteExistente = clienteService.findById(id);
             if (clienteExistente == null) {
@@ -57,7 +58,7 @@ public class ClienteController {
 
             clienteExistente.setNome(request.getNome());
             clienteExistente.setFoneCelular(request.getFoneCelular());
-            clienteExistente.setDataNascimento(request.getDataNascimento()); 
+            clienteExistente.setDataNascimento(request.getDataNascimento());
 
             Cliente clienteAtualizado = clienteService.update(clienteExistente);
 
@@ -76,16 +77,18 @@ public class ClienteController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
             }
 
-            Evento evento = eventoService.findById(eventoId); 
+            Evento evento = eventoService.findById(eventoId);
             if (evento == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento não encontrado.");
             }
 
-            clienteService.adicionarEventoFavorito(cliente, evento); 
-            return ResponseEntity.ok().build(); 
+            clienteService.adicionarEventoFavorito(cliente, evento);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.err.println("Erro ao favoritar evento para " + email + " evento ID " + eventoId + ": " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao favoritar evento: " + e.getMessage());
+            System.err.println(
+                    "Erro ao favoritar evento para " + email + " evento ID " + eventoId + ": " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao favoritar evento: " + e.getMessage());
         }
     }
 
@@ -97,21 +100,23 @@ public class ClienteController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
             }
 
-            Evento evento = eventoService.findById(eventoId); 
+            Evento evento = eventoService.findById(eventoId);
             if (evento == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento não encontrado.");
             }
 
-            clienteService.removerEventoFavorito(cliente, evento); 
-            return ResponseEntity.ok().build(); 
+            clienteService.removerEventoFavorito(cliente, evento);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.err.println("Erro ao desfavoritar evento para " + email + " evento ID " + eventoId + ": " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao desfavoritar evento: " + e.getMessage());
+            System.err.println(
+                    "Erro ao desfavoritar evento para " + email + " evento ID " + eventoId + ": " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao desfavoritar evento: " + e.getMessage());
         }
     }
 
-    @GetMapping("/by-email/{email}/favorited-events")
-    public ResponseEntity<List<Evento>> getFavoritedEventsByEmail(@PathVariable String email) {
+    @GetMapping("/favorited-events")
+    public ResponseEntity<List<Evento>> getFavoritedEventsByEmail(@RequestParam String email) {
         try {
             Cliente cliente = clienteService.findByUserEmail(email);
             if (cliente == null) {

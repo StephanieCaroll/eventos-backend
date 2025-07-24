@@ -33,6 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/stand/disponiveis",
             "/api/stand/usuario",
             "/api/stand/registered",
+            "/api/stand/selecao",
+            "/api/stand/disponiveis-evento",
             "/api-docs",
             "/swagger-ui"
     );
@@ -41,7 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/clientes",
             "/api/dono",
             "/api/adm",
-            "/api/auth"
+            "/api/auth",
+            "/api/stand/processar-reserva"
     );
 
     public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService,

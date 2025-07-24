@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ifpe.eventos.modelo.evento.Evento;
 import br.com.ifpe.eventos.modelo.evento.EventoService;
+import br.com.ifpe.eventos.modelo.stand.dto.StandSelectionDTO;
 
 @RestController
 @RequestMapping("/api/evento")
@@ -55,5 +56,25 @@ public class EventoController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         eventoService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    // Endpoint para obter stands disponíveis para um evento (para facilitar seleção visual)
+    @GetMapping("/{id}/stands-disponiveis")
+    public ResponseEntity<List<StandSelectionDTO>> getStandsDisponiveisParaEvento(@PathVariable Long id) {
+        try {
+            // Este endpoint poderia usar o StandService diretamente
+            // mas mantendo a responsabilidade no EventoService se necessário
+            Evento evento = eventoService.findById(id);
+            if (evento == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Por enquanto, retornamos uma lista vazia - a implementação real
+            // deveria usar um método no EventoService que usa o StandService
+            return ResponseEntity.ok(List.of());
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar stands disponíveis para evento: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+        }
     }
 }

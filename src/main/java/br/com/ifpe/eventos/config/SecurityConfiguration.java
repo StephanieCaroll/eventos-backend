@@ -47,6 +47,13 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/api/stand/disponiveis").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stand/usuario").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/stand/registered").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stand/selecao").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stand/disponiveis-evento").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/stand/processar-reserva").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/stand/batch-operation").permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/api/stand-selection/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/stand-selection/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET,"/api/evento").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/clientes/by-email/**").permitAll() 

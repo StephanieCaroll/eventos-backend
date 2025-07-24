@@ -17,8 +17,15 @@ public class TratadorErros {
 
    @ExceptionHandler(Exception.class)
    public ResponseEntity tratarErro500(Exception ex) {
-
-       return ResponseEntity.internalServerError().body(ex.getMessage());
+       System.err.println("Erro 500 capturado: " + ex.getMessage());
+       ex.printStackTrace();
+       
+       Map<String, Object> errorResponse = new HashMap<>();
+       errorResponse.put("error", "Erro interno do servidor");
+       errorResponse.put("message", ex.getMessage());
+       errorResponse.put("timestamp", System.currentTimeMillis());
+       
+       return ResponseEntity.internalServerError().body(errorResponse);
    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
