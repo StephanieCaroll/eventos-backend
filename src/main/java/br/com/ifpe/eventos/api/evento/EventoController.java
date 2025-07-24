@@ -29,27 +29,29 @@ public class EventoController {
 
 
     @PostMapping
-    public ResponseEntity<Evento> save(@RequestBody EventoRequest request) {
+    public ResponseEntity<EventoResponse> save(@RequestBody EventoRequest request) {
      
         Evento eventoSalvo = eventoService.salvar(request);
-        return new ResponseEntity<>(eventoSalvo, HttpStatus.CREATED);
+        return new ResponseEntity<>(EventoResponse.fromEvento(eventoSalvo), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Evento> findAll() {
-        return eventoService.findAll();
+    public List<EventoResponse> findAll() {
+        return eventoService.findAll().stream()
+            .map(EventoResponse::fromEvento)
+            .collect(java.util.stream.Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Evento findById(@PathVariable Long id) {
-        return eventoService.findById(id);
+    public EventoResponse findById(@PathVariable Long id) {
+        return EventoResponse.fromEvento(eventoService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Evento> update(@PathVariable("id") Long id, @RequestBody EventoRequest request) {
+    public ResponseEntity<EventoResponse> update(@PathVariable("id") Long id, @RequestBody EventoRequest request) {
 
         Evento eventoAtualizado = eventoService.update(id, request);
-        return ResponseEntity.ok(eventoAtualizado);
+        return ResponseEntity.ok(EventoResponse.fromEvento(eventoAtualizado));
     }
 
     @DeleteMapping("/{id}")

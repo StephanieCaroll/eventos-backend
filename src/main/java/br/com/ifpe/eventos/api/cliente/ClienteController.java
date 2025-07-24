@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.ifpe.eventos.api.evento.EventoResponse;
 import br.com.ifpe.eventos.modelo.cliente.Cliente;
 import br.com.ifpe.eventos.modelo.cliente.ClienteService;
 import br.com.ifpe.eventos.modelo.evento.Evento;
@@ -33,23 +34,45 @@ public class ClienteController {
     private EventoService eventoService;
 
     @PostMapping
-    public ResponseEntity<Cliente> save(@RequestBody ClienteRequest request) {
+    public ResponseEntity<ClienteResponse> save(@RequestBody ClienteRequest request) {
         Cliente cliente = clienteService.save(request.build());
-        return new ResponseEntity<>(cliente, HttpStatus.CREATED);
+        ClienteResponse response = ClienteResponse.builder()
+            .id(cliente.getId())
+            .nome(cliente.getNome())
+            .dataNascimento(cliente.getDataNascimento())
+            .foneCelular(cliente.getFoneCelular())
+            .email(cliente.getUsuario().getUsername())
+            .eventosFavoritos(cliente.getEventosFavoritos().stream()
+                .map(ClienteResponse.EventoSummary::fromEvento)
+                .collect(java.util.stream.Collectors.toList()))
+            .build();
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/by-email/{email}")
-    public ResponseEntity<Cliente> getClienteByEmail(@PathVariable String email) {
+    public ResponseEntity<ClienteResponse> getClienteByEmail(@PathVariable String email) {
         Cliente cliente = clienteService.findByUserEmail(email);
 
         if (cliente == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(cliente);
+        
+        ClienteResponse response = ClienteResponse.builder()
+            .id(cliente.getId())
+            .nome(cliente.getNome())
+            .dataNascimento(cliente.getDataNascimento())
+            .foneCelular(cliente.getFoneCelular())
+            .email(cliente.getUsuario().getUsername())
+            .eventosFavoritos(cliente.getEventosFavoritos().stream()
+                .map(ClienteResponse.EventoSummary::fromEvento)
+                .collect(java.util.stream.Collectors.toList()))
+            .build();
+            
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> update(@PathVariable Long id, @RequestBody ClienteRequest request) {
+    public ResponseEntity<ClienteResponse> update(@PathVariable Long id, @RequestBody ClienteRequest request) {
         try {
             Cliente clienteExistente = clienteService.findById(id);
             if (clienteExistente == null) {
@@ -62,7 +85,18 @@ public class ClienteController {
 
             Cliente clienteAtualizado = clienteService.update(clienteExistente);
 
-            return ResponseEntity.ok(clienteAtualizado);
+            ClienteResponse response = ClienteResponse.builder()
+                .id(clienteAtualizado.getId())
+                .nome(clienteAtualizado.getNome())
+                .dataNascimento(clienteAtualizado.getDataNascimento())
+                .foneCelular(clienteAtualizado.getFoneCelular())
+                .email(clienteAtualizado.getUsuario().getUsername())
+                .eventosFavoritos(clienteAtualizado.getEventosFavoritos().stream()
+                    .map(ClienteResponse.EventoSummary::fromEvento)
+                    .collect(java.util.stream.Collectors.toList()))
+                .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.err.println("Erro ao atualizar cliente com ID " + id + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -116,14 +150,17 @@ public class ClienteController {
     }
 
     @GetMapping("/favorited-events")
-    public ResponseEntity<List<Evento>> getFavoritedEventsByEmail(@RequestParam String email) {
+    public ResponseEntity<List<EventoResponse>> getFavoritedEventsByEmail(@RequestParam String email) {
         try {
             Cliente cliente = clienteService.findByUserEmail(email);
             if (cliente == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             List<Evento> favoritos = clienteService.getEventosFavoritos(cliente);
-            return ResponseEntity.ok(favoritos);
+            List<EventoResponse> favoritosResponse = favoritos.stream()
+                .map(EventoResponse::fromEvento)
+                .collect(java.util.stream.Collectors.toList());
+            return ResponseEntity.ok(favoritosResponse);
         } catch (Exception e) {
             System.err.println("Erro ao buscar eventos favoritos para " + email + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

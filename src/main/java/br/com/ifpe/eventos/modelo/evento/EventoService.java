@@ -44,14 +44,21 @@ public class EventoService {
         Evento evento = repository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Evento com ID " + id + " não encontrado."));
 
-        evento.getStands().size(); 
+        // Força a inicialização da coleção
+        if (evento.getStands() != null) {
+            evento.getStands().size(); 
+        }
         return evento;
     }
 
     public List<Evento> findAll() {
         List<Evento> eventos = repository.findAll();
 
-        eventos.forEach(evento -> evento.getStands().size()); 
+        eventos.forEach(evento -> {
+            if (evento.getStands() != null) {
+                evento.getStands().size(); 
+            }
+        });
         return eventos;
     }
 

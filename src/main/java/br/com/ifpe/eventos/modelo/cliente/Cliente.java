@@ -1,21 +1,21 @@
 package br.com.ifpe.eventos.modelo.cliente;
 
 import java.time.LocalDate;
-import java.util.ArrayList; 
-import java.util.List; 
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.SQLRestriction;
 
 import br.com.ifpe.eventos.modelo.acesso.Usuario;
-import br.com.ifpe.eventos.modelo.evento.Evento; 
+import br.com.ifpe.eventos.modelo.evento.Evento;
 import br.com.ifpe.eventos.util.entity.EntidadeAuditavel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.ManyToMany; 
-import jakarta.persistence.JoinTable; 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +51,7 @@ public class Cliente extends EntidadeAuditavel {
         joinColumns = @JoinColumn(name = "cliente_id"), 
         inverseJoinColumns = @JoinColumn(name = "evento_id") 
     )
+    @Builder.Default
     private List<Evento> eventosFavoritos = new ArrayList<>(); 
 
 }
